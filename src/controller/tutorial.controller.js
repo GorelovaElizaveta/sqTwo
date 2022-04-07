@@ -108,10 +108,9 @@ exports.remove = (req, res) => {
     res.status(500).send(" id not defaind");
   }
 
-  const present = req.query.hasOwnProperty("id");
   if (present) {
-    Tutorial.destroy({ where: { id } }, { order: ["id"] }).then((data) => {
-      Tutorial.findAll()
+    Tutorial.destroy({ where: { id } }).then((data) => {
+      Tutorial.findAll({ order: ["id"] })
         .then((data) => {
           if (data) {
             res.send(data);
