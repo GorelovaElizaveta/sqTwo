@@ -1,18 +1,17 @@
-const e = require("express");
+const express = require("express");
 const db = require("../models");
 
 const Tutorial = db.tutorials;
 
 // Создание
 exports.create = (req, res) => {
-  if (!req.body.title) {
+  const { title, description, published } = req.body;
+  if (!(title && description && published)) {
     res.status(400).send({
-      message: "Content can not be empty!"
+      message: "Content can not be empty!",
     });
-    return;
   }
 
-  const { title, description, published } = req.body;
   const tutorial = {
     title,
     description,
@@ -31,16 +30,13 @@ exports.create = (req, res) => {
 
 //получение всех
 exports.findAll = (req, res) => {
-  const { id} = req.body;
-  console.log(req.body.id)
-
   Tutorial.findAll({ order: ["id"] })
     .then((data) => {
-      if(data){
-      res.send(data)
+      if (data) {
+        res.send(data);
       } else {
-        res.send("tasks not defined")
-      };
+        res.status(500).send( "tasks not defined");
+      }
     })
     .catch((err) => {
       res.status(500).send({
@@ -51,16 +47,17 @@ exports.findAll = (req, res) => {
 
 //получение одной
 exports.findOne = (req, res) => {
-  const { id } = req.query;
-  let presentId = req.query.hasOwnProperty("id");
+  const  id  = req.query.id;
+console.log(id)
+
   if (id) {
     Tutorial.findByPk(id)
       .then((data) => {
-        if(data){
-        res.send(data)
-      } else {
-        res.send("error")
-      };
+        if (data) {
+          res.send(data);
+        } else {
+          res.status(500).send("error task not found");
+        }
       })
       .catch((err) => {
         res.status(500).send({
@@ -68,26 +65,25 @@ exports.findOne = (req, res) => {
         });
       });
   } else {
-    res.send("id not found");
+    res.status(500).send( "id not found");
   }
 };
 
 // Изменение
 exports.updateTitle = (req, res) => {
-  const { id } = req.body;
+  const { id, title, description, published} = req.body;
   const body = req.body
 
-  if (id && (body.title || body.description || body.published )){
-
-    Tutorial.update( { where: { id } })
+  if (id && (title || description || published)) {
+    Tutorial.update(body, { where: { id } })
       .then((data) => {
         Tutorial.findAll({ order: ["id"] })
           .then((data) => {
-            if(data){
-            res.send(data)
-          } else {
-            res.send("Error getting task.")
-          };
+            if (data) {
+              res.send(data);
+            } else {
+              res.status(500).send( "Error getting task.");
+            }
           })
           .catch((err) => {
             res.status(500).send({
@@ -101,24 +97,27 @@ exports.updateTitle = (req, res) => {
         });
       });
   } else {
-    res.send("to update you need to get all the data");
+    res.status(500).send( "to update you need to get all the data");
   }
 };
 
 //удаление
 exports.remove = (req, res) => {
   const { id } = req.query;
+  if(!id){
+    res.status(500).send(" id not defaind");
+  }
 
-  let present = req.query.hasOwnProperty("id");
+  const present = req.query.hasOwnProperty("id");
   if (present) {
-    Tutorial.destroy({ where: { id } },{ order: ["id"] }).then((data) => {
+    Tutorial.destroy({ where: { id } }, { order: ["id"] }).then((data) => {
       Tutorial.findAll()
         .then((data) => {
-          if(data) {
-          res.send(data)
+          if (data) {
+            res.send(data);
           } else {
-            res.send("not defaind")
-          };
+            res.status(500).send("not defaind");
+          }
         })
         .catch((err) => {
           res.status(500).send({

@@ -6,7 +6,7 @@ module.exports = (app) => {
   router.patch("/patch", tutorialControllers.updateTitle);
   router.delete("/", tutorialControllers.remove);
   router.get("/getAllTutorial", tutorialControllers.findAll);
-  router.get("/getOne/:id", tutorialControllers.findOne);
+  router.get("/getOne/", tutorialControllers.findOne);
 
   app.use("/api/tutorials", router);
 };
