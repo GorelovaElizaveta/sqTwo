@@ -48,7 +48,6 @@ exports.findAll = (req, res) => {
 //получение одной
 exports.findOne = (req, res) => {
   const  id  = req.query.id;
-console.log(id)
 
   if (id) {
     Tutorial.findByPk(id)
@@ -71,7 +70,7 @@ console.log(id)
 
 // Изменение
 exports.updateTitle = (req, res) => {
-  const { id, title, description, published} = req.body;
+  const {  id, title, description, published } = req.body;
   const body = req.body
 
   if (id && (title || description || published)) {
@@ -104,7 +103,7 @@ exports.updateTitle = (req, res) => {
 //удаление
 exports.remove = (req, res) => {
   const { id } = req.query;
-  if(!id){
+  if(!id) {
     res.status(500).send(" id not defaind");
   }
 
